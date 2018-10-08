@@ -122,7 +122,8 @@ Four edubfm_Insert(
 		bufInfo[type].hashTable[hashValue] = index;
 	}
 	else {
-		
+		BI_NEXTHASHENTRY(type, index) = BI_HASHTABLEENTRY(type, hashValue);
+		bufInfo[type].hashTable[hashValue] = index;
 	}
 
    
@@ -164,7 +165,7 @@ Four edubfm_Delete(
 	hashValue = BFM_HASH(key, type);
 	i=bufInfo[type].hashTable[hashValue];
 	while (BI_NEXTHASHENTRY(type, i) != NIL) {
-		if (BI_KEY(type, i) == key) {
+		if (BI_KEY(type, i).pageNo == key->pageNo) {
 			BI_NEXTHASHENTRY(type, prev) = BI_NEXTHASHENTRY(type, i);
 
 			break;
@@ -207,8 +208,21 @@ Four edubfm_LookUp(
 
 	hashValue = BFM_HASH(key, type);
 	i = bufInfo[type].hashTable[hashValue];
-	for (i; BI_NEXTHASHENTRY(type, i) == NIL;i= BI_NEXTHASHENTRY(type, i)) {
-		if (BI_KEY(type, i) == key) {
+	if (BI_KEY(type, i).pageNo == key->pageNo) {
+		if (BI_KEY(type, i).volNo == key->volNo) {
+			return i;
+		}
+	}
+	while(BI_NEXTHASHENTRY(type, i) != NIL){
+		if (BI_KEY(type, i).pageNo == key->pageNo) {
+			if (BI_KEY(type, i).volNo == key->volNo) {
+				return i;
+			}
+		}
+		i = BI_NEXTHASHENTRY(type, i);
+	}
+	if (BI_KEY(type, i).pageNo == key->pageNo) {
+		if (BI_KEY(type, i).volNo == key->volNo) {
 			return i;
 		}
 	}
@@ -240,14 +254,12 @@ Four edubfm_DeleteAll(void)
 	/* These local variables are used in the solution code. However, you don¡¯t have to use all these variables in your code, and you may also declare and use additional local variables if needed. */
     Two 	i;
     Four        tableSize;
-
-	for (i; i < sizeof(bufInfo[0]) / 2;i++) {
-		bufInfo[0][i]=NIL;
+	for (i = 0; i < HASHTABLESIZE(0); i++) {
+		BI_HASHTABLEENTRY(0, i) = NIL;
 	}
-	for (i; i < sizeof(bufInfo[1]) / 2; i++) {
-		bufInfo[1][i]=NIL;
+	for (i = 0; i < HASHTABLESIZE(1); i++) {
+		BI_HASHTABLEENTRY(1, i) = NIL;
 	}
-
     return(eNOERROR);
 
 } /* edubfm_DeleteAll() */ 

@@ -96,9 +96,11 @@ Four EduBfM_SetDirty(
     if (IS_BAD_BUFFERTYPE(type)) ERR(eBADBUFFERTYPE_BFM);
 
 	index=edubfm_LookUp(trainId, type);
-	if (BI_BITS(type, index) < 128) {
-		BI_BITS(type, index) += 128;
+
+	if (index <0) {
+		return(eNOERROR);
 	}
+	BI_BITS(type, index) |= 1;
 
 
     return( eNOERROR );

@@ -90,13 +90,14 @@ Four EduBfM_FreeTrain(
 
     /*@ check if the parameter is valid. */
     if (IS_BAD_BUFFERTYPE(type)) ERR(eBADBUFFERTYPE_BFM);
+
 	index=edubfm_LookUp(trainId, type);
-	if (BI_FIXED(type, index) > 1) {
-		BI_FIXED(type, index) = BI_FIXED(type, index) - 1;
+	if (BI_FIXED(type, index) > 0) {
+		BI_FIXED(type, index) = BI_FIXED(type, index)-1;
 	}
 	else
 	{
-		printf("(fixed counter is less than 0!!!");
+		printf("fixed counter is less than 0!!!");
 		BI_FIXED(type, index) = 0;
 	}
     return( eNOERROR );

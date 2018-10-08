@@ -78,27 +78,24 @@
  * Returns:
  *  error code
  */
+
 Four EduBfM_FlushAll(void)
 {
 	/* These local variables are used in the solution code. However, you don¡¯t have to use all these variables in your code, and you may also declare and use additional local variables if needed. */
-    Four        e;                      /* error */
-    Two         i;                      /* index */
-    Four        type;                   /* buffer type */
-
-	for (i = 0; i < sizeof(bufInfo[0].hashTable) / 2; i++) {
-		idx = bufInfo[0].hashTable[i];
-		if (BI_BITS(0, idx) = 0) {
-			edubfm_FlushTrain(BI_KEY(0, idx));
+	Four        e;                      /* error */
+	Two         i;                      /* index */
+	Four        type;                   /* buffer type */
+	
+	for (i = 0; i < bufInfo[0].nBufs; i++) {
+		if (BI_BITS(0,i) & 1 == 1) {
+			edubfm_FlushTrain((TrainID*)&BI_KEY(0,i), 0);
 		}
 	}
 
-	for (i = 0; i < sizeof(bufInfo[1].hashTable) / 2; i++) {
-		idx = bufInfo[1].hashTable[i];
-		if (BI_BITS(1, idx) = 0) {
-			edubfm_FlushTrain(BI_KEY(1, idx));
+	for (i = 0; i < bufInfo[1].nBufs; i++) {
+		if ((BI_BITS(1, i) & 1) == 1) {
+			edubfm_FlushTrain((TrainID*)&BI_KEY(1, i), 1);
 		}
 	}
-    return( eNOERROR );
-    
-}  /* EduBfM_FlushAll() */
-
+}
+ /* EduBfM_FlushAll() */

@@ -85,19 +85,20 @@ Four EduBfM_DiscardAll(void)
     Four 	type;			/* buffer type */
 	Two idx;
 	
-	for (i=0; i < sizeof(bufInfo[0].hashTable) / 2; i++) {
-		idx = bufInfo[0].hashTable[i];
-		BI_KEY(0, idx) = NIL;
-		BI_BITS(0, idx) = 0;
-		bufInfo[0].hashTable[i] = NIL;
+	for (i = 0; i < bufInfo[0].nBufs; i++) {
+		BI_KEY(0, i).pageNo = NIL;
+		BI_BITS(0, i) = 0;
 	}
-	for (i=0; i < sizeof(bufInfo[1].hashTable) / 2; i++) {
-		idx = bufInfo[1].hashTable[i];
-		BI_KEY(1, idx) = NIL;
-		BI_BITS(1, idx) = 0;
-		bufInfo[1].hashTable[i] = NIL;
+	for (i = 0; i < bufInfo[1].nBufs; i++) {
+		BI_KEY(1, i).pageNo = NIL;
+		BI_BITS(1, i) = 0;
 	}
-
+	for (i = 0; i < HASHTABLESIZE(0); i++) {
+		BI_HASHTABLEENTRY(0, i) = NIL;
+	}
+	for (i = 0; i < HASHTABLESIZE(1); i++) {
+		BI_HASHTABLEENTRY(1, i) = NIL;
+	}
 
     return(eNOERROR);
 

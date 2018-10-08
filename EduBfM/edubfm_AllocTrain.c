@@ -99,27 +99,29 @@ Four edubfm_AllocTrain(
     Four 	e;			/* for error */
     Four 	victim;			/* return value */
     Four 	i;
-	one a;
+	Two a;
 
 	/* Error check whether using not supported functionality by EduBfM */
 	if(sm_cfgParams.useBulkFlush) ERR(eNOTSUPPORTED_EDUBFM);
-
-	for (i = 0; i < BI_BUFSIZE(type); i++) {
-		a= BI_BITS(type, (bufInfo[type].nextVictim + i) % bufInfo[type].nBufs);
-		a = a % 64;
-		if (a % 32 > 1) {
-			a = a - 32;
+	victim = BI_NEXTVICTIM(type);
+	for (i=0 ; i< BI_BUFSIZE(type)*NUM_BUF_TYPES;i++) {
+		a= BI_BITS(type, victim);
+		if (BI_FIXED(type, victim)==0) {
+			if (a & 4 == 4) {
+				BI_BITS(type, victim) -= 4;
+			}
+			else {
+				
+				break;
+			}
 		}
-		else {
-			edubfm_Delete(BI_KEY(type, (bufInfo[type].nextVictim + i) % bufInfo[type].nBufs), type);
-			BI_BITS(type, (bufInfo[type].nextVictim + i) % bufInfo[type].nBufs) = 0;
-			bufInfo[type].nextVictim = (bufInfo[type].nextVictim + i + 1) % bufInfo[type].nBufs;
-			victim = bufInfo[type].nextVictim + i) % bufInfo[type];
-			break;
-		}
-
+		(victim + 1) % BI_NBUFS(type);
 	}
-    
+	edubfm_FlushTrain((TrainID*)&BI_KEY(type, victim), type);
+	edubfm_Delete((TrainID*)&BI_KEY(type, victim), type);
+	BI_BITS(type, victim) = 0;
+	bufInfo[type].nextVictim = (victim + 1) % bufInfo[type].nBufs;
+	bufInfo[type].hashTable[victim] = NIL;
     return( victim );
     
 }  /* edubfm_AllocTrain */

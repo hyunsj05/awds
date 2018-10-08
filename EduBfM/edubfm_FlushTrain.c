@@ -94,13 +94,13 @@ Four edubfm_FlushTrain(
 
 	/* Error check whether using not supported functionality by EduBfM */
 	if (RM_IS_ROLLBACK_REQUIRED()) ERR(eNOTSUPPORTED_EDUBFM);
-
-	Two index = edubfm_LookUp(trainId,type);
-	if (BI_BITS(type, index) > 128 ) {
-		RDsM_WriteTrain(trainId , BufInfo[type].bufTable[index], 1 )
-	}
-	if (BI_BITS(type, index) > 128) {
-		BI_BITS(type, index) = BI_BITS(type, index) - 128;
+	PageID *page;
+	index = edubfm_LookUp(trainId,type);
+	page->pageNo = BI_KEY(type, index).pageNo;
+	page->volNo = BI_KEY(type, index).volNo;
+	if (BI_BITS(type, index)&1==1 ) {
+		RDsM_WriteTrain(trainId, page, BI_BUFSIZE(type));
+		BI_BITS(type, index) = BI_BITS(type, index)-1;
 	}
 	
 	
